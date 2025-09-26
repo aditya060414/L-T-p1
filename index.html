@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List Application</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+    .completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">To-Do List Application</h2>
+
+    <!-- Task Input -->
+    <div class="input-group mb-3">
+      <input type="text" id="taskInput" class="form-control" placeholder="Enter a new task">
+      <button class="btn btn-primary" id="addTaskBtn">Add Task</button>
+    </div>
+
+    <!-- Filter Options -->
+    <div class="mb-3">
+      <select id="filterTasks" class="form-select w-50">
+        <option value="all">Show All</option>
+        <option value="completed">Completed</option>
+        <option value="active">Active</option>
+      </select>
+    </div>
+
+    <!-- Task List -->
+    <ul class="list-group" id="taskList"></ul>
+  </div>
+
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      // Add Task
+      $('#addTaskBtn').click(function() {
+        let taskText = $('#taskInput').val().trim();
+        if (taskText !== "") {
+          let taskItem = `
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <input type="checkbox" class="form-check-input me-2 toggle-complete">
+                <span class="task-text">${taskText}</span>
+              </div>
+              <div>
+                <button class="btn btn-sm btn-warning edit-btn">Edit</button>
+                <button class="btn btn-sm btn-danger delete-btn">Delete</button>
+              </div>
+            </li>`;
+          $('#taskList').append(taskItem);
+          $('#taskInput').val("");
+        }
+      });
+
+      // Delete Task
+      $(document).on('click', '.delete-btn', function() {
+        $(this).closest('li').remove();
+      });
+
+      // Mark as Completed
+      $(document).on('change', '.toggle-complete', function() {
+        $(this).siblings('.task-text').toggleClass('completed');
+      });
+
+      // Edit Task
+      $(document).on('click', '.edit-btn', function() {
+        let taskTextEl = $(this).closest('li').find('.task-text');
+        let currentText = taskTextEl.text();
+        let newText = prompt("Edit Task:", currentText);
+        if (newText !== null && newText.trim() !== "") {
+          taskTextEl.text(newText);
+        }
+      });
+
+      // Filter Tasks
+      $('#filterTasks').change(function() {
+        let filter = $(this).val();
+        $('#taskList li').each(function() {
+          let isCompleted = $(this).find('.task-text').hasClass('completed');
+          if (filter === 'all') {
+            $(this).show();
+          } else if (filter === 'completed' && isCompleted) {
+            $(this).show();
+          } else if (filter === 'active' && !isCompleted) {
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
